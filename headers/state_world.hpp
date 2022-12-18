@@ -27,6 +27,8 @@ class StateWorld {
   RenderWindow *window;
   string *route;
 
+  bool isInWarPoint = false;
+
   void handleKeyboard();
 
  public:

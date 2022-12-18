@@ -45,6 +45,29 @@ void Tilemap::draw(RenderWindow &window) {
       index++;
     }
   }
+
+  // objects
+  int indexObject = 0;
+  for (int a = 0; a < h; a++) {
+    for (int b = 0; b < w; b++) {
+      auto tile3 = this->tileData->getTileLayer3()->at(indexObject);
+
+      // layer objects
+      if (tile3.getType() != 0) {
+        Sprite spriteObject{};
+        spriteObject.setTexture(
+            this->asset->getVectorObjects()->at(tile3.getType() - 145));
+        spriteObject.setPosition(
+            tileSize * b,
+            tileSize * a - (spriteObject.getGlobalBounds().height - tileSize));
+        // spriteObject.setPosition(1280 / 2, 720 / 2);
+
+        window.draw(spriteObject);
+      }
+
+      indexObject++;
+    }
+  }
 }
 
 bool Tilemap::canMoveVertical(Player &player, View &view, bool isUp) {
@@ -64,11 +87,12 @@ bool Tilemap::canMoveVertical(Player &player, View &view, bool isUp) {
   int index = col + row * this->tileData->getWidth();
   auto tileItem = this->tileData->getTileLayer1()->at(index);
   auto tileItem2 = this->tileData->getTileLayer2()->at(index);
+  auto tileItem3 = this->tileData->getTileLayer3()->at(index);
 
   if (tileItem2.isAccessable())
     return true;
   else
-    return tileItem.isAccessable();
+    return tileItem.isAccessable() && tileItem3.isAccessable();
 }
 
 bool Tilemap::canMoveHorizontal(Player &player, View &view, bool isRight) {
@@ -88,11 +112,13 @@ bool Tilemap::canMoveHorizontal(Player &player, View &view, bool isRight) {
   int index = col + row * this->tileData->getWidth();
   auto tileItem = this->tileData->getTileLayer1()->at(index);
   auto tileItem2 = this->tileData->getTileLayer2()->at(index);
+  auto tileItem3 = this->tileData->getTileLayer3()->at(index);
 
   if (tileItem2.isAccessable())
     return true;
   else
-    return tileItem.isAccessable() && tileItem.isAccessableFromSide();
+    return tileItem.isAccessable() && tileItem.isAccessableFromSide() &&
+           tileItem3.isAccessable();
 }
 
 bool Tilemap::canMoveUp(Player &player, View &view) {

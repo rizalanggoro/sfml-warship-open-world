@@ -26,15 +26,24 @@ void StateWorld::run() {
   auto winCenter = this->window->getView().getCenter();
   auto playerSize = this->player.getFrameSize();
 
+  CircleShape circleWarPoint{};
+  circleWarPoint.setRadius(16);
+  circleWarPoint.setFillColor(Color::Transparent);
+  circleWarPoint.setOutlineColor(Color::Red);
+  circleWarPoint.setOutlineThickness(1.32);
+  circleWarPoint.setPosition(32 * 22, 32 * (50 - 15));
+  this->window->draw(circleWarPoint);
+
   this->player.getSprite()->setPosition(winCenter.x, winCenter.y);
   this->player.getSprite()->setOrigin(playerSize, playerSize);
   this->player.draw(*this->window);
 
-  // CircleShape circle{};
-  // circle.setRadius(16);
-  // circle.setFillColor(Color::Red);
-  // circle.setPosition(32 * 3, 32 * 18);
-  // this->window->draw(circle);
+  if (this->player.getSprite()->getGlobalBounds().contains(
+          circleWarPoint.getPosition().x + 16,
+          circleWarPoint.getPosition().y + 16))
+    this->isInWarPoint = true;
+  else
+    this->isInWarPoint = false;
 
   this->handleKeyboard();
 }
@@ -48,6 +57,11 @@ void StateWorld::handleEvent(Event &event) {
     this->zoomOutCount = 0;
   } else if (event.type == Event::KeyReleased) {
     auto code = event.key.code;
+    if (this->isInWarPoint && code == Keyboard::Enter) {
+      *this->route = "main_menu";
+      this->window->setView(this->window->getDefaultView());
+      this->view.move(0, -32);
+    }
     if (code == Keyboard::Up) this->player.setPlayerState(back_idle);
     if (code == Keyboard::Down) this->player.setPlayerState(front_idle);
     if (code == Keyboard::Right) this->player.setPlayerState(right_idle);
